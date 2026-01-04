@@ -8,7 +8,7 @@ const BodySchema = z.object({
   service: z.string().min(1),
   entity_id: z.string().optional(),
   entity_ids: z.array(z.string()).optional(),
-  data: z.record(z.any()).optional(),
+  data: z.record(z.string(), z.any()).optional(),
 });
 
 export async function POST(req: Request) {
