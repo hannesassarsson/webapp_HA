@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* ===== HA Webapp Theme ===== */
+
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  color: #f5f5f7;
+  font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.06), transparent 40%),
+    linear-gradient(180deg, #0b0f1a, #05070d);
+}
+
+body {
+  background-attachment: fixed;
+  color: #f5f5f7;
+}
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--glass-shadow);
+  border-radius: 20px;
+}
+
+.glass-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+}
+
+
+/* --- Radix Slider dark polish --- */
+[data-radix-slider-track],
+[data-slot="slider-track"] {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08));
+  height: 10px;
+}
+
+[data-radix-slider-range],
+[data-slot="slider-range"] {
+  background: linear-gradient(90deg, #fefefe, #cde1ff);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.25);
+}
+
+[data-radix-slider-thumb],
+[data-slot="slider-thumb"] {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25), 0 0 0 6px rgba(255, 255, 255, 0.06);
+}
