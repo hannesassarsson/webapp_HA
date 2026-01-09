@@ -200,6 +200,8 @@ export default function LamporPage() {
     };
 
     loadStates();
+    const interval = setInterval(loadStates, 15000);
+    return () => clearInterval(interval);
   }, []);
 
   const triggerAction = async ({
@@ -269,7 +271,7 @@ export default function LamporPage() {
                   Lampor
                 </h1>
                 <p className="text-white/70 max-w-2xl">
-                  Glasiga kort, mjuka skuggor och iOS-lik kontroll. Tryck på en ruta för detaljerad styrning.
+                  Snabb kontroll. Tryck för på/av, långtryck för fler val.
                 </p>
               </div>
               <div className="flex gap-3 items-start">

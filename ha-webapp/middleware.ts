@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 
-const publicPaths = ["/login", "/api/auth/login", "/favicon.ico", "/_next", "/api/ha"];
+const publicPaths = ["/login", "/api/auth/login", "/api/auth/me", "/favicon.ico", "/_next", "/api/ha"];
 
 const base64url = {
   decode(input: string) {

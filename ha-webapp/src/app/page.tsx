@@ -118,6 +118,7 @@ export default function Page() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   useEffect(() => {
     const loadKeyStates = async () => {
@@ -158,6 +159,24 @@ export default function Page() {
 
     loadKeyStates();
     loadLights();
+    const interval = setInterval(() => {
+      loadKeyStates();
+      loadLights();
+    }, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/auth/me", { cache: "no-store" });
+        const json = await res.json();
+        if (json.ok) setCurrentUser(json.user);
+      } catch {
+        setCurrentUser(null);
+      }
+    };
+    fetchUser();
   }, []);
 
   const todayPlan = useMemo(() => formatCalendar(keyStates["calendar.hannes_elvira"], 0), [keyStates]);
@@ -213,10 +232,12 @@ export default function Page() {
           <div className="relative space-y-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div className="space-y-2">
-                <div className="text-sm text-white/70 uppercase tracking-[0.18em]">Hem · Översikt</div>
-                <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">Hej!</h1>
+                <div className="text-sm text-white/70 uppercase tracking-[0.18em]">Hem</div>
+                <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+                  Hej {currentUser ? currentUser.charAt(0).toUpperCase() + currentUser.slice(1) : ""}!
+                </h1>
                 <p className="text-white/70 max-w-2xl">
-                  Snabb status för hemmet, kalender och väder – med åtgärder inspirerade av din HA-dashboard.
+                  Snabb överblick och genvägar.
                 </p>
               </div>
             </div>
