@@ -12,7 +12,9 @@ export function RoomSection({
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
         <div className="h-px flex-1 bg-white/10 rounded-full" />
       </div>
-      {children}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {children}
+      </div>
     </section>
   );
 }

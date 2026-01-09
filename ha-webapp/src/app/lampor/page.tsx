@@ -426,7 +426,7 @@ export default function LamporPage() {
                 variants={staggerContainer}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-2 sm:grid-cols-3 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-3 gap-4"
               >
                 {items.map((light) => (
                   <motion.div variants={fadeInUp} key={light.id}>
