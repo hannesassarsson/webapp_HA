@@ -17,6 +17,8 @@ const trackedIds = [
   "input_boolean.borta_lage",
   "sensor.hannes_iphone_steps",
   "sensor.elviras_iphone_2_steps",
+  "device_tracker.hannes_iphone",
+  "device_tracker.elviras_iphone_2",
 ];
 
 const lampEntityIds = [
@@ -187,6 +189,8 @@ export default function Page() {
   const todayPlan = useMemo(() => formatCalendar(keyStates["calendar.hannes_elvira"], 0), [keyStates]);
   const tomorrowPlan = useMemo(() => formatCalendar(keyStates["calendar.hannes_elvira"], 1), [keyStates]);
   const awayMode = keyStates["input_boolean.borta_lage"]?.state === "on";
+  const hannesHome = keyStates["device_tracker.hannes_iphone"]?.state === "home";
+  const elviraHome = keyStates["device_tracker.elviras_iphone_2"]?.state === "home";
 
   const triggerAction = async (action: typeof actionCards[number]) => {
     try {
@@ -385,6 +389,18 @@ export default function Page() {
                 </div>
                 <div className="text-sm text-white/80">
                   Elvira: {keyStates["sensor.elviras_iphone_2_steps"]?.state ?? "–"}
+                </div>
+              </div>
+              <div className="rounded-2xl bg-white/10 border border-white/10 px-4 py-3">
+                <div className="text-xs text-white/60 uppercase tracking-[0.14em]">Hannes</div>
+                <div className="text-lg font-semibold">
+                  {hannesHome ? "Hemma" : "Borta"}
+                </div>
+              </div>
+              <div className="rounded-2xl bg-white/10 border border-white/10 px-4 py-3">
+                <div className="text-xs text-white/60 uppercase tracking-[0.14em]">Elvira</div>
+                <div className="text-lg font-semibold">
+                  {elviraHome ? "Hemma" : "Borta"}
                 </div>
               </div>
             </div>
