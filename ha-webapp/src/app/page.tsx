@@ -119,6 +119,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [smhi, setSmhi] = useState<{ temp?: number; wind?: number; precip?: number; cloud?: number } | null>(null);
 
   useEffect(() => {
     const loadKeyStates = async () => {
@@ -177,6 +178,23 @@ export default function Page() {
       }
     };
     fetchUser();
+  }, []);
+
+  useEffect(() => {
+    const loadSmhi = async () => {
+      try {
+        const res = await fetch("/api/smhi", { cache: "no-store" });
+        const json = await res.json();
+        if (json.ok) {
+          setSmhi(json.data);
+        }
+      } catch {
+        setSmhi(null);
+      }
+    };
+    loadSmhi();
+    const interval = setInterval(loadSmhi, 180000); // 3 minuter
+    return () => clearInterval(interval);
   }, []);
 
   const todayPlan = useMemo(() => formatCalendar(keyStates["calendar.hannes_elvira"], 0), [keyStates]);
@@ -249,6 +267,18 @@ export default function Page() {
                 </div>
                 <div className="mt-2 text-3xl font-semibold">{weather.temp}</div>
                 <div className="text-sm text-white/70">{weather.summary}</div>
+              </div>
+              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
+                <div className="flex items-center gap-2 text-sm text-white/70">
+                  <SunMedium className="h-4 w-4" /> SMHI
+                </div>
+                <div className="mt-2 text-3xl font-semibold">
+                  {typeof smhi?.temp === "number" ? `${smhi.temp.toFixed(1)}°C` : "–"}
+                </div>
+                <div className="text-sm text-white/70">
+                  {typeof smhi?.precip === "number" ? `${smhi.precip} mm` : "Ingen data"}
+                  {typeof smhi?.wind === "number" ? ` · ${smhi.wind} m/s` : ""}
+                </div>
               </div>
               <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
                 <div className="flex items-center gap-2 text-sm text-white/70">
