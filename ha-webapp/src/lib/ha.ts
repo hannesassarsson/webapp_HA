@@ -16,7 +16,6 @@ export type HAState = {
 
 async function haFetch(path: string, init?: RequestInit) {
   const url = `${HA_URL}${path}`;
-  console.log("[HA FETCH]", url);
 
   try {
     const res = await fetch(url, {
@@ -31,13 +30,11 @@ async function haFetch(path: string, init?: RequestInit) {
 
     if (!res.ok) {
       const text = await res.text();
-      console.error("[HA RESPONSE ERROR]", res.status, text);
       throw new Error(`HA ${res.status}: ${text}`);
     }
 
     return res;
   } catch (err) {
-    console.error("[HA FETCH FAILED]", err);
     throw err;
   }
 }
