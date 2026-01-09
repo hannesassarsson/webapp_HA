@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Moon, Sparkles, Lightbulb, Power, SunMedium, CalendarDays, ArrowRight } from "lucide-react";
+import { Moon, Sparkles, Lightbulb, Power, SunMedium, CalendarDays } from "lucide-react";
 import { staggerContainer, fadeInUp } from "@/components/animations";
 
 type HAState = {
@@ -14,7 +14,6 @@ type HAState = {
 
 const trackedIds = [
   "calendar.hannes_elvira",
-  "weather.smhi_home",
   "input_boolean.borta_lage",
   "sensor.hannes_iphone_steps",
   "sensor.elviras_iphone_2_steps",
@@ -97,18 +96,6 @@ function formatCalendar(state?: HAState, dayOffset = 0) {
   const isAllDay = Boolean(state.attributes?.all_day);
   const timeLabel = isAllDay ? "Heldag" : start.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
   return `${message} • ${timeLabel}`;
-}
-
-function weatherSummary(state?: HAState) {
-  if (!state) return { temp: "--", summary: "Ingen väderdata" };
-  const temp = state.attributes?.temperature;
-  const cond = state.state ?? "—";
-  const wind = state.attributes?.wind_speed;
-  const precip = state.attributes?.forecast?.[0]?.precipitation;
-  const summaryParts = [cond];
-  if (typeof wind === "number") summaryParts.push(`${wind} m/s`);
-  if (typeof precip === "number" && precip > 0) summaryParts.push(`${precip} mm`);
-  return { temp: typeof temp === "number" ? `${temp}°C` : "--", summary: summaryParts.join(" · ") };
 }
 
 export default function Page() {
@@ -199,7 +186,6 @@ export default function Page() {
 
   const todayPlan = useMemo(() => formatCalendar(keyStates["calendar.hannes_elvira"], 0), [keyStates]);
   const tomorrowPlan = useMemo(() => formatCalendar(keyStates["calendar.hannes_elvira"], 1), [keyStates]);
-  const weather = useMemo(() => weatherSummary(keyStates["weather.smhi_home"]), [keyStates]);
   const awayMode = keyStates["input_boolean.borta_lage"]?.state === "on";
 
   const triggerAction = async (action: typeof actionCards[number]) => {
@@ -261,13 +247,6 @@ export default function Page() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
-                <div className="flex items-center gap-2 text-sm text-white/70">
-                  <SunMedium className="h-4 w-4" /> Väder
-                </div>
-                <div className="mt-2 text-3xl font-semibold">{weather.temp}</div>
-                <div className="text-sm text-white/70">{weather.summary}</div>
-              </div>
               <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
                 <div className="flex items-center gap-2 text-sm text-white/70">
                   <SunMedium className="h-4 w-4" /> SMHI
