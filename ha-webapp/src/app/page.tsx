@@ -109,6 +109,7 @@ export default function Page() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [smhi, setSmhi] = useState<{ temp?: number; wind?: number; precip?: number; cloud?: number } | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     const loadKeyStates = async () => {
@@ -168,6 +169,16 @@ export default function Page() {
     };
     fetchUser();
   }, []);
+
+  const logout = async () => {
+    try {
+      setLoggingOut(true);
+      await fetch("/api/auth/logout", { method: "POST" });
+      window.location.href = "/login";
+    } catch {
+      setLoggingOut(false);
+    }
+  };
 
   useEffect(() => {
     const loadSmhi = async () => {
@@ -248,6 +259,13 @@ export default function Page() {
                   Snabb överblick och genvägar.
                 </p>
               </div>
+              <button
+                onClick={logout}
+                disabled={loggingOut}
+                className="self-start rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold backdrop-blur hover:border-white/35 disabled:opacity-60"
+              >
+                {loggingOut ? "Loggar ut..." : "Logga ut"}
+              </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
