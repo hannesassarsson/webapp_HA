@@ -1,123 +1,70 @@
-# HA Web Dashboard
+# HA Webapp
 
-En egenbyggd webbaserad dashboard för Home Assistant, byggd med Next.js och exponerad säkert via Cloudflare Tunnel.
-Dashboarden ersätter eller kompletterar Home Assistants inbyggda UI med ett mer skräddarsytt gränssnitt.
-
-Projektet körs lokalt i Home Assistant-miljön och kan nås både på LAN och externt via egen domän.
-
----
+Next.js-app för Home Assistant-kontroll med glasig UI, PIN-inloggning, Cloudflare-tunnel och SMHI-väder. Koden bor i `ha-webapp/`.
 
 ## Funktioner
+- Lampor/switchar från HA med live polling, snabbåtgärder och long-press modal.
+- PIN-inloggning (Hannes/Elvira), middleware-skydd, logout.
+- Hemdash med SMHI-temp/nederbörd/vind, HA-kalender, närvaro (device_tracker), bortaläge, steg.
+- Bottom-nav (Hem/Lampor/Scener), responsiv layout.
 
-- Anpassad dashboard för Home Assistant
-- Kommunikation med Home Assistant REST API
-- Stöd för lampor, switchar, scener och script
-- Publik åtkomst utan port forwarding via Cloudflare Tunnel
-- HTTPS via Cloudflare
-- Responsivt gränssnitt för mobil, surfplatta och desktop
+## Krav
+- Node 18+.
+- HA-token och HA-url i `.env.local`.
+- (Valfritt) Cloudflare Tunnel för extern åtkomst.
 
----
-
-## Teknikstack
-
-- Next.js (App Router)
-- Node.js
-- TypeScript
-- Home Assistant REST API
-- Cloudflare Tunnel (cloudflared)
-- Cloudflare DNS
-
----
-
-## Projektstruktur
-
-ha-webapp/
-├── src/
-│   ├── app/
-│   │   ├── api/
-│   │   │   └── ha/
-│   │   │       ├── states/
-│   │   │       └── service/
-│   │   ├── lampor/
-│   │   ├── scener/
-│   │   └── page.tsx
-│   ├── components/
-│   └── lib/
-├── public/
-├── package.json
-├── next.config.ts
-└── README.md
-
----
-
-## Miljövariabler
-
-Skapa en fil `.env.local` i projektroten:
-
-HA_URL=http://192.168.0.41:8123
-HA_TOKEN=LONG_LIVED_ACCESS_TOKEN
-
-HA_URL ska peka på Home Assistant internt.
-HA_TOKEN är en Long-Lived Access Token från Home Assistant.
-
----
-
-## Lokal utveckling
-
-Installera beroenden:
-
+## Install/Dev
+```bash
+cd ha-webapp
+cp .env.local.example .env.local   # skapa egen fil
 npm install
+npm run dev -- --hostname 0.0.0.0 --port 3000
+```
+Öppna http://localhost:3000 (eller host-IP:3000).
 
-Starta utvecklingsserver:
-
-npm run dev
-
-Applikationen nås på:
-
-http://localhost:3000
-
----
-
-## Production build
-
-Bygg projektet:
-
+## Prod (manuellt)
+```bash
 npm run build
+npm run start -- --hostname 0.0.0.0 --port 3000
+```
 
-Starta i production-läge:
+## Miljövariabler (.env.local)
+```
+HA_URL=http://<din-ha>:8123
+HA_TOKEN=<long-lived token>
+AUTH_SECRET=<lång slumpad sträng>
+HANNES_PIN=<pin>
+ELVIRA_PIN=<pin>
+SMHI_LAT=<lat>
+SMHI_LON=<lon>
+```
+(.env* är ignorerad i git.)
 
-npm run start
+## Cloudflare Tunnel (exempel)
+- `cloudflared tunnel login`
+- `cloudflared tunnel create ha-webapp`
+- `~/.cloudflared/config.yml`:
+```yaml
+tunnel: <tunnel-id>
+credentials-file: /root/.cloudflared/<tunnel-id>.json
+ingress:
+  - hostname: <din-subdomän.dindomän.se>
+    service: http://127.0.0.1:3000
+  - service: http_status:404
+```
+- `cloudflared tunnel run ha-webapp`
 
-Servern lyssnar på port 3000.
-
----
-
-## Cloudflare Tunnel
-
-Applikationen exponeras externt via Cloudflare Tunnel.
-
-Tunnel körs med:
-
-cloudflared tunnel run ha-dashboard
-
-Public hostname konfigureras i Cloudflare Dashboard:
-
-Subdomain: dashboard  
-Domain: hanneselvirapilgrimsgatan.org  
-Service: http://192.168.0.41:3000  
-
----
-
-## Autostart
-
-Applikationen kan startas automatiskt vid boot via cron:
-
-@reboot /root/start-ha-webapp.sh
-
----
-
-## Säkerhet
-
+## Screenshots
+- Hem:  
+  ![Hem](ha-webapp/public/hem.png)
+- Lampor:  
+  ![Lampor](ha-webapp/public/lampor.png)
+- Popup (long press):  
+  ![Popup](ha-webapp/public/popup.png)
+- Inloggning:  
+  ![Inloggning](ha-webapp/public/inloggning.png)
+- Scener (placeholder):  
+  ![Scener](ha-webapp/public/scener.png)
 - Home Assistant exponeras aldrig direkt mot internet
 - All extern trafik går via Cloudflare Tunnel
 - HTTPS hanteras av Cloudflare
