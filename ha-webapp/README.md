@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HA Webapp
 
-## Getting Started
+Next.js-app för Home Assistant-kontroll med glasig UI, PIN-inloggning, Cloudflare-tunnel och SMHI-väder.
 
-First, run the development server:
+## Funktioner
+- Lampor/switchar från HA med live polling (var 15 s), snabbåtgärder och long-press modal.
+- PIN-inloggning (Hannes/Elvira), middleware-skydd, logout.
+- Hemdash med SMHI-temp/nederbörd/vind (poll var 3 min), HA-kalender, närvaro (device_tracker), bortaläge, steg.
+- Bottom-nav (Hem/Lampor/Scener), responsiv layout.
 
+## Krav
+- Node 18+ (dev) på hosten.
+- HA-token och HA-url i `.env.local`.
+- (Valfritt) Cloudflare Tunnel för extern åtkomst.
+
+## Install/Dev
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/hannesassarsson/webapp_HA.git
+cd webapp_HA/ha-webapp
+cp .env.local.example .env.local   # skapa egen fil
+npm install
+npm run dev -- --hostname 0.0.0.0 --port 3000
+```
+Öppna http://localhost:3000 (eller host-IP:3000).
+
+## Prod (manuellt)
+```bash
+npm run build
+npm run start -- --hostname 0.0.0.0 --port 3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Miljövariabler (.env.local)
+```
+HA_URL=http://<din-ha>:8123
+HA_TOKEN=<long-lived token>
+AUTH_SECRET=<lång slumpad sträng>
+HANNES_PIN=<pin>
+ELVIRA_PIN=<pin>
+SMHI_LAT=<lat>   # t.ex. 55.429
+SMHI_LON=<lon>   # t.ex. 13.820
+```
+(.env* är ignorerad i git.)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Cloudflare Tunnel (kort, exempel)
+- `cloudflared tunnel login`
+- `cloudflared tunnel create ha-webapp`
+- `~/.cloudflared/config.yml`:
+```yaml
+tunnel: <tunnel-id>
+credentials-file: /root/.cloudflared/<tunnel-id>.json
+ingress:
+  - hostname: <din-subdomän.dindomän.se>
+    service: http://127.0.0.1:3000
+  - service: http_status:404
+```
+- `cloudflared tunnel run ha-webapp`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Screenshots
+- Hem:  
+  ![Hem](public/hem.png)
+- Lampor:  
+  ![Lampor](public/lampor.png)
+- Popup (long press):  
+  ![Popup](public/popup.png)
+- Inloggning:  
+  ![Inloggning](public/inloggning.png)
+- Scener (placeholder):  
+  ![Scener](public/scener.png)
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Övrigt
+- Debug-loggar mot HA är avstängda.
+- För extra säkerhet: längre PIN + rate-limit, Cloudflare Access (SSO/OTP) framför tunneln.***
